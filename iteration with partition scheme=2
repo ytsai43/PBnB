@@ -1,0 +1,65 @@
+import numpy as np
+from math import *
+from random import *
+delta = 0.1 #clossness parameter
+alpha = 0.25 #error rate
+epsilon = 0.001 #condition to terminate subregion with continuous case 
+M = 2 #number of subregions
+l,u=5,10 #range of variable x
+mean,sigma = 0,1 
+
+
+#iteration
+while ((u-l)>epsilon):
+alpha = alpha / 2
+middlePoint = (l + u) / 2 #partition scheme
+N = ceil(log(alpha) / log(1-delta)) # number of sample point we need in one subregion
+Regions = M
+R = ceil(log(alpha / (2 * (Regions-1))) / log(0.5)) #number of replication
+sl = l
+su = middlePoint
+hHat=[]
+feasibleRegion=[]
+
+for m in range(Regions) :
+    feasibleRegion.append([])    
+    for n in range(N):
+        x = uniform(sl,su)
+        feasibleRegion[m].append([])
+        for r in range(R): 
+            noisy = np.random.normal(mean, sigma,1)
+            feasibleRegion[m][n].append(3 * x + 2 + noisy)         
+        feasibleRegion[m][n].append(np.mean(feasibleRegion[m][n])) #mean value stored in the last position
+    if n == N-1:
+        sl = middlePoint
+        su = u
+    feasibleRegion[m].sort(key = lambda x: (x[-1])) #rank mean objective value in m-th subregion
+    hHat.append(feasibleRegion[m][0][-1])
+      
+minSubregion = hHat.index(min(hHat))
+otherSubregion = feasibleRegion[:] 
+del otherSubregion[minSubregion]
+
+
+del feasibleRegion[minSubregion][0][-1]
+feasibleRegion[minSubregion][0].sort()
+upStar = feasibleRegion[minSubregion][0][-1]
+
+for m in range(Regions-1):
+    del otherSubregion[m][0][-1]
+    otherSubregion[m][0].sort()
+    downStar = otherSubregion[m][0][0]  
+print(upStar,downStar)
+if upStar < downStar:
+
+    if minSubregion == 0: # minSubregion is region 1th
+        sl = l
+        su = middlePoint
+    if (su - sl) > epsilon: #branchable      
+        l = sl
+        u = su
+        print (l,u)        
+    else:
+        print(upStar) # unbranchable so output final solution
+else:
+    print("remaning all")
