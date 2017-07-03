@@ -25,12 +25,12 @@ fHatx2=[]
 hHat2=[]
 hHat=[]
 mean,sigma = 0,1 
-for i in range(2):
+for i in range(N):
     region1.append([])
     region2.append([])
     x1=(uniform(l,middlePoint))
     x2=(uniform(middlePoint,u))
-    for r in range(2): 
+    for r in range(R): 
         noisy = np.random.normal(mean, sigma,1)
         region1[i].append(3*x1+2+noisy)
         noisy = np.random.normal(mean, sigma,1)
@@ -39,8 +39,8 @@ for i in range(2):
     region2[i].append(np.mean(region2[i]))
 region1.sort(key = lambda x: (x[-1]))
 region2.sort(key = lambda x: (x[-1]))
-comList=[region1[0][2],region2[0][2]]
-rankSubregion=comList.index(min(region1[0][2],region2[0][2]))
+comList=[region1[0][R],region2[0][R]]
+rankSubregion=comList.index(min(region1[0][R],region2[0][R]))
 print(region1,region2)
 
 if rankSubregion == 0:
